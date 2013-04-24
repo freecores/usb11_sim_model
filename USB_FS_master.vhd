@@ -7,7 +7,7 @@
 --  the associated disclaimer.                                                                              --
 --                                                                                                          --
 --  This software is provided ''as is'' and without any express or implied warranties, including, but not   --
---  limited to, the implied warranties of merchantability and fitness for a particular purpose. in no event --
+--  limited to, the implied warranties of merchantability and fitness for a particular purpose. In no event --
 --  shall the author or contributors be liable for any direct, indirect, incidental, special, exemplary, or --
 --  consequential damages (including, but not limited to, procurement of substitute goods or services; loss --
 --  of use, data, or profits; or business interruption) however caused and on any theory of liability,      --
@@ -27,6 +27,7 @@
 -- Version / date        Description                                                                        --
 --                                                                                                          --
 -- 01  05 Mar 2011 MN    Initial version                                                                    --
+-- 02  01 Nov 2011 MN    Removed application specific interface, gererate 12 MHz clk internally             --
 --                                                                                                          --
 -- End change history                                                                                       --
 --==========================================================================================================--
@@ -61,39 +62,27 @@ LIBRARY work;
   USE work.usb_commands.all;
 
 ENTITY usb_fs_master IS PORT(
-  -- USB Interface --
-  usb_clk         : IN    STD_LOGIC;
-  int_clk         : IN    STD_LOGIC;
   rst_neg_ext     : OUT   STD_LOGIC;
   usb_Dp          : INOUT STD_LOGIC;
-  usb_Dn          : INOUT STD_LOGIC;
-  -- Application Interface
-  RXval           : IN  STD_LOGIC;                    -- RX bytes available
-  RXdat           : IN  STD_LOGIC_VECTOR(7 DOWNTO 0); -- Received data bytes
-  RXrdy           : OUT STD_LOGIC := '0';             -- Application ready for data
-  RXlen           : IN  STD_LOGIC_VECTOR(7 DOWNTO 0); -- Number of bytes available
-  TXval           : OUT STD_LOGIC := '0';             -- Application has valid data
-  TXdat           : OUT STD_LOGIC_VECTOR(7 DOWNTO 0); -- Data byte to send
-  TXrdy           : IN  STD_LOGIC;                    -- Entity is ready for data
-  TXroom          : IN  STD_LOGIC_VECTOR(7 DOWNTO 0); -- No of free bytes in TX
-  TXcork          : OUT STD_LOGIC := '1');            -- Hold TX transmission
+  usb_Dn          : INOUT STD_LOGIC
+);
 END usb_fs_master;
 
 ARCHITECTURE SIM OF usb_fs_master IS
 
   SIGNAL T_No           : NATURAL;
+  SIGNAL usb_clk        : STD_LOGIC;
   SIGNAL crc_16         : STD_LOGIC_VECTOR(15 DOWNTO 0);
   SIGNAL crc_5          : STD_LOGIC_VECTOR( 4 DOWNTO 0);
   SIGNAL master_oe      : STD_LOGIC;
   SIGNAL stimuli_bit    : STD_LOGIC := 'Z';
-  SIGNAL stop_sim       : BOOLEAN := false;
   SIGNAL stuffing_requ  : BOOLEAN;
   SIGNAL usb_request    : usb_action;
 
   function next_CRC_5 (Data: std_logic; crc:  std_logic_vector(4 downto 0)) return std_logic_vector is
     -- Copyright (C) 1999-2008 Easics NV. http://www.easics.com/webtools/crctool
-    variable d:      std_logic;
-    variable c:      std_logic_vector(4 downto 0);
+    variable d:       std_logic;
+    variable c:       std_logic_vector(4 downto 0);
     variable new_crc: std_logic_vector(4 downto 0);
   begin
     d          := Data;
@@ -135,28 +124,25 @@ ARCHITECTURE SIM OF usb_fs_master IS
 
 begin
 
+  p_usb_clk : PROCESS
+  BEGIN
+    usb_clk <= '0';
+    WAIT FOR 20866 ps;
+    usb_clk <= '1';
+    WAIT FOR 41600 ps;
+    usb_clk <= '0';
+    WAIT FOR 20867 ps;
+  END PROCESS;
+
   test_case : ENTITY work.usb_stimuli
   PORT MAP(
-    -- Test Control Interface --
     usb         => usb_request,
-    T_No        => T_No,
-    -- Application Interface
-    clk         => int_clk,
     rst_neg_ext => rst_neg_ext,
-    RXval       => RXval,
-    RXdat       => RXdat,
-    RXrdy       => RXrdy,
-    RXlen       => RXlen,
-    TXval       => TXval,
-    TXdat       => TXdat,
-    TXrdy       => TXrdy,
-    TXroom      => TXroom,
-    TXcork      => TXcork
+    T_No        => T_No
   );
 
   usb_fs_monitor : ENTITY work.usb_fs_monitor
   port map (
-    clk_60MHz   => int_clk,
     master_oe   => master_oe,
     usb_Dp      => usb_dp,
     usb_Dn      => usb_dn
