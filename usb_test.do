@@ -6,30 +6,31 @@
   echo  "===> Recompiling Sources"
   echo  "===>"
 
-  if {[file exists work]} { vdel -lib work -all }
-  vlib                      work
-  vmap           work       D:/Design/My_USB_Controller/work
+ #if {[file exists work]} { vdel -lib work -all }
+  vlib                      D:/Design/work
+  vmap           work       D:/Design/work
 
   # Open Cores USB Phy, designed by Rudolf Usselmanns and translated to VHDL by Martin Neumann
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_phy/usb_rx_phy_60MHz.vhdl
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_phy/usb_tx_phy.vhdl
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_phy/usb_phy.vhdl
+
+  vcom -93 -work work       D:/design/completed_vhdl/usb_fs_port/usb_phy/usb_rx_phy_60MHz.vhdl
+  vcom -93 -work work       D:/design/completed_vhdl/usb_fs_port/usb_phy/usb_tx_phy.vhdl
+  vcom -93 -work work       D:/design/completed_vhdl/usb_fs_port/usb_phy/usb_phy.vhdl
 
   # Open Cores  USB Serial, designed by Joris van Rantwijk
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_serial/usb_pkg.vhdl
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_serial/usb_init.vhdl
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_serial/usb_control.vhdl
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_serial/usb_transact.vhdl
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_serial/usb_packet.vhdl
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_serial/usb_serial.vhdl
-  vcom -93 -work work       D:/Design/My_USB_Controller/Source/usb_fs_slave.vhdl
+  vcom -93 -work work       D:/design/completed_vhdl/usb_fs_port/usb_serial/usb_pkg.vhdl
+  vcom -93 -work work       D:/design/completed_vhdl/usb_fs_port/usb_serial/usb_init.vhdl
+  vcom -93 -work work       D:/design/completed_vhdl/usb_fs_port/usb_serial/usb_control.vhdl
+  vcom -93 -work work       D:/design/completed_vhdl/usb_fs_port/usb_serial/usb_transact.vhdl
+  vcom -93 -work work       D:/design/completed_vhdl/usb_fs_port/usb_serial/usb_packet.vhdl
+  vcom -93 -work work       D:/design/completed_vhdl/usb_fs_port/usb_serial/usb_serial.vhdl
 
   # The USB FS test bench files
-  vcom -93 -work work       D:/Design/My_USB_Controller/Testbench/usb_commands.vhd
-  vcom -93 -work work       D:/Design/My_USB_Controller/Testbench/usb_stimuli.vhd
-  vcom -93 -work work       D:/Design/My_usb_Controller/Testbench/usb_fs_monitor.vhd
-  vcom -93 -work work       D:/Design/My_usb_Controller/Testbench/usb_fs_master.vhd
-  vcom -93 -work work       D:/Design/My_USB_Controller/Testbench/usb_tb.vhd
+  vcom -93 -work work       D:/OpenCores/usb11_sim_model/trunk/usb_fs_port.vhdl
+  vcom -93 -work work       D:/OpenCores/usb11_sim_model/trunk/usb_commands.vhd
+  vcom -93 -work work       D:/OpenCores/usb11_sim_model/trunk/usb_stimuli.vhd
+  vcom -93 -work work       D:/OpenCores/usb11_sim_model/trunk/usb_fs_monitor.vhd
+  vcom -93 -work work       D:/OpenCores/usb11_sim_model/trunk/usb_fs_master.vhd
+  vcom -93 -work work       D:/OpenCores/usb11_sim_model/trunk/usb_tb.vhd
 
   echo  "===>"
   echo  "===> Start Simulation"
